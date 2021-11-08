@@ -18,11 +18,15 @@
         />
       </div>
       <div class="buttons">
-        <Button value="Log in" appearance="primary" v-on:click.prevent="auth" />
+        <Button
+          value="Log in"
+          appearance="primary"
+          @click.prevent="$emit('auth', { login })"
+        />
         <Button
           value="Sign up"
           appearance="warning"
-          v-on:click.prevent="signUpUser"
+          @click.prevent="$emit('singUp', { login, password })"
         />
       </div>
     </form>
@@ -34,54 +38,27 @@ import Button from "./Button.vue";
 import Field from "./Field.vue";
 
 export default {
+  components: {
+    Field,
+    Button,
+  },
+  emits: ["singUp", "auth"],
   data() {
     return {
       login: "",
       password: "",
     };
   },
-  created() {
-    fetch("/api/users")
-      .then((res) => res.json())
-      .then((data) => console.log(data));
-  },
-  components: {
-    Field,
-    Button,
-  },
-  methods: {
-    signUpUser() {
-      const user = JSON.stringify({
-        login: this.login,
-        password: this.password,
-      });
-
-      fetch("/api/auth/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: user,
-      });
-    },
-    auth() {
-      fetch("/api/token", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          // Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-        },
-        body: JSON.stringify(this.login),
-      })
-        .then((response) => {
-          return response.json();
-        })
-        .then((data) => {
-          console.log(data);
-        });
-      this.$router.push("/");
-    },
-  },
+  //   props: {
+  //     login: {
+  //       type: String,
+  //       default: "",
+  //     },
+  //     password: {
+  //       type: String,
+  //       default: "",
+  //     },
+  //   },
 };
 </script>
 

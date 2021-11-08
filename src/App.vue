@@ -2,9 +2,6 @@
   <layout>
     <router-view />
   </layout>
-  <!-- <component :is="layout">
-    <router-view />
-  </component> -->
 </template>
 
 <script>
@@ -14,13 +11,14 @@ export default {
   components: {
     Layout,
   },
-  // methods: {
-  //   layout() {
-  //     // const layoutName = this.$route.meta.layout || "DefaultLayout";
-  //     if (this.$route.meta.layout) {
-  //       return () => import("./layouts/Layout.vue");
-  //     }
-  //   },
+  // created() {
+  //   fetch("/api/users")
+  //     .then((res) => res.json())
+  //     .then((data) => {
+  //       if (!data.length) {
+  //         this.$router.push("/login");
+  //       }
+  //     });
   // },
 };
 </script>

@@ -13,6 +13,11 @@ const routes = [
       layout: true,
     },
   },
+  // {
+  //   path: "/sugnup",
+  //   name: "SingUp",
+  //   component: SingUp,
+  // },
   {
     path: "/login",
     name: "Login",
@@ -42,6 +47,15 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes,
+});
+
+router.beforeEach((to, from, next) => {
+  const auth = () => {
+    return this.$store.getters.getAuth;
+  };
+
+  if (to.name !== "Login" && !auth) next({ name: "Login" });
+  else next();
 });
 
 export default router;

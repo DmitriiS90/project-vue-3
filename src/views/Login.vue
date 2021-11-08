@@ -1,13 +1,15 @@
 <template>
   <div>
-    <Auth />
+    <!-- <Auth /> -->
+    <SignUp />
   </div>
 </template>
 
 <script>
-import Auth from "../components/Auth.vue";
+// import Auth from "../components/Auth.vue";
+import SignUp from "../components/SignUp.vue";
 export default {
-  components: { Auth },
+  components: { /*Auth,*/ SignUp },
 };
 </script>
 

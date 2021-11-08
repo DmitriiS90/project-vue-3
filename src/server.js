@@ -1,4 +1,4 @@
-import { Server } from "miragejs";
+import { Server, Response } from "miragejs";
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 
@@ -11,6 +11,7 @@ export function makeServer({ environment = "development" } = {}) {
     seeds(server) {
       server.db.loadData({
         users: [],
+        tokens: [],
       });
     },
 
@@ -21,23 +22,66 @@ export function makeServer({ environment = "development" } = {}) {
         return schema.db.users;
       });
 
-      this.get("/auth/login", async (schema, request) => {
-        const data = request.requestBody;
-        const token = jwt.sign({ login: data.login }, secretKey);
-
-        await this.get("/auth/token", () => {
-          return { token };
-        });
-
-        return schema.db.users.findBy({ login: data.login });
-      });
-
       this.get("/users/me", (schema, request) => {
         request.requestHeaders["Authorization"];
       });
 
+      this.post("/token", async (schema, request) => {
+        const login = JSON.parse(request.requestBody);
+        const user = schema.db.users.findBy({ login });
+
+        if (!user) {
+          return new Response(404);
+        }
+
+        if (user.id) {
+          const userTokens = schema.db.tokens.findBy({ userId: +user.id });
+
+          if (userTokens) {
+            return new Response(200, undefined, {
+              statusCode: 200,
+              message: "Login Success",
+            });
+          }
+        }
+
+        const accessToken = jwt.sign({ login }, secretKey, {
+          expiresIn: 900,
+        });
+        const refreshToken = jwt.sign({ login }, secretKey, {
+          expiresIn: 86400,
+        });
+
+        schema.db.tokens.insert({
+          userId: +user.id,
+          accessToken,
+          refreshToken,
+        });
+
+        return {
+          accessToken,
+          refreshToken,
+        };
+      });
+
+      // this.get("/refreshToken", async (schema, request) => {
+
+      // });
+
+      this.post("/logout", (schema, request) => {
+        const login = request.requestBody;
+        const user = schema.db.users.findBy({ login });
+        schema.db.tokens.remove({ userId: +user.id });
+
+        return new Response(204);
+      });
+
       this.post("/auth/signup", async (schema, request) => {
-        const { login, password } = request.requestBody;
+        const { login, password } = JSON.parse(request.requestBody);
+
+        if (!login || !password) {
+          return new Response(404);
+        }
 
         await bcrypt.genSalt(10, (err, salt) => {
           bcrypt.hash(password, salt, (err, hash) => {
