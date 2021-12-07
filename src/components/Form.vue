@@ -2,53 +2,33 @@
   <div class="login">
     <form name="login-form" class="login-form">
       <div class="content">
-        <Field
-          name="login"
-          type="text"
-          placeholder="Логин"
-          className="input"
-          v-model.value="login"
-        />
-        <Field
-          name="password"
-          type="password"
-          placeholder="Пароль"
-          className="input"
-          v-model.value="password"
-        />
+        <slot />
       </div>
-      <div class="buttons">
-        <Button
-          value="Log in"
-          appearance="primary"
-          @click.prevent="$emit('auth', { login })"
-        />
+      <!-- <div class="buttons">
         <Button
           value="Sign up"
-          appearance="warning"
-          @click.prevent="$emit('singUp', { login, password })"
+          appearance="primary"
+          @click.prevent="$emit('onSubmit')"
         />
-      </div>
+      </div> -->
     </form>
   </div>
 </template>
 
 <script>
-import Button from "./Button.vue";
-import Field from "./Field.vue";
+// import Button from "./Button.vue";
 
 export default {
   components: {
-    Field,
-    Button,
+    // Button,
   },
-  emits: ["singUp", "auth"],
-  data() {
-    return {
-      login: "",
-      password: "",
-    };
-  },
+  // emits: ["onSubmit"],
+  // data() {
+  //   return {
+  //     login: "",
+  //     password: "",
+  //   };
+  // },
   //   props: {
   //     login: {
   //       type: String,
@@ -79,7 +59,6 @@ export default {
       display: flex;
       justify-content: space-around;
       padding: 0px 30px 20px 30px;
-      background: #f3f3f3;
     }
   }
 }

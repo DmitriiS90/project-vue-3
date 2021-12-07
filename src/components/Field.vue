@@ -37,7 +37,6 @@ export default {
 <style lang="scss" scoped>
 .input {
   width: 188px;
-  margin-top: 25px;
   padding: 15px 25px;
   font-weight: 400;
   font-size: 14px;

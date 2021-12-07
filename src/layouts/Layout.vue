@@ -3,7 +3,7 @@
     <Header v-if="$route.meta.layout" />
 
     <section class="content">
-      <Menu v-if="$route.meta.layout" />
+      <Dashboard v-if="$route.meta.layout" />
 
       <div class="page">
         <slot />
@@ -15,12 +15,12 @@
 </template>
 
 <script>
-import Menu from "./Menu.vue";
+import Dashboard from "./Dashboard.vue";
 import Footer from "./Footer.vue";
 import Header from "./Header.vue";
 export default {
   name: "Layout",
-  components: { Header, Footer, Menu },
+  components: { Header, Footer, Dashboard },
 };
 </script>
 

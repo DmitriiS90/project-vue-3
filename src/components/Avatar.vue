@@ -8,9 +8,11 @@
     />
 
     <div class="menu" v-if="showMenu">
-      <div class="menu-item" v-on:click="getProfile">Profile settings</div>
-      <div class="menu-item" v-on:click="getProfile">View profile</div>
-      <div class="menu-item" v-on:click="logout">Log out</div>
+      <div class="menu-item" v-on:click.prevent="getProfile">
+        Profile settings
+      </div>
+      <div class="menu-item" v-on:click.prevent="getProfile">View profile</div>
+      <div class="menu-item" v-on:click.prevent="logout">Log out</div>
     </div>
   </div>
 </template>
@@ -32,6 +34,7 @@ export default {
       this.showMenu = !this.showMenu;
     },
     logout() {
+      this.$store.dispatch("setAuth", false);
       this.$router.push("/login");
     },
     getProfile() {
