@@ -101,11 +101,11 @@ export function makeServer({ environment = "development" } = {}) {
         return schema.db.boards;
       });
 
-      this.post("/boards", async (schema, request) => {
-        // const id = +request.params.id;
+      this.post("/projects/:id/boards", async (schema, request) => {
+        const id = +request.params.id;
 
-        const { projectId, name } = JSON.parse(request.requestBody);
-        const project = schema.db.projects.find(projectId);
+        const { name } = JSON.parse(request.requestBody);
+        const project = schema.db.projects.find(id);
 
         if (project.boards) {
           project.boards.push({ name });
@@ -114,7 +114,7 @@ export function makeServer({ environment = "development" } = {}) {
           project.boards.push({ name });
         }
 
-        schema.db.projects.update({ id: +projectId }, project);
+        schema.db.projects.update({ id: +id }, project);
         // schema.db.boards.insert({ name });
       });
 

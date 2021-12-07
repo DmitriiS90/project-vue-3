@@ -65,9 +65,9 @@ export default {
       this.$store.dispatch("fetchBoards", boards);
     },
     async createBoard(projectId) {
-      const { status } = await fetch(`/api/boards`, {
+      const { status } = await fetch(`/api/projects/${projectId}/boards`, {
         method: "POST",
-        body: JSON.stringify({ projectId, name: this.name }),
+        body: JSON.stringify({ name: this.name }),
       });
 
       if (status === 201) {
