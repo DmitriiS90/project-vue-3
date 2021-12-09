@@ -4,10 +4,14 @@
       <h3 class="description-title">{{ this.name }}</h3>
       <div class="description-text">
         <p>Description</p>
-        <textarea></textarea>
+        <textarea v-model="descriptionText"></textarea>
       </div>
       <div class="description-controls">
-        <Button value="Save" appearance="primary" />
+        <Button
+          value="Save"
+          appearance="primary"
+          @click="addDescription(this.boardId, this.itemId)"
+        />
         <Button
           value="Cancel"
           appearance="danger"
@@ -25,12 +29,61 @@ export default {
   data() {
     return {
       showModal: false,
+      descriptionText: "",
     };
+  },
+  created() {
+    fetch(`/api/projects/${this.$route.params.id}/boards`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (!data) {
+          data = [];
+        }
+        const description = data[this.boardId].list[this.itemId].description;
+        this.descriptionText = description;
+      });
   },
   props: {
     name: {
       type: String,
       default: "",
+    },
+    boardId: {
+      type: Number,
+    },
+    itemId: {
+      type: Number,
+    },
+  },
+  methods: {
+    async fetchDescriptionText(itemId) {
+      const response = await fetch(
+        `/api/projects/${this.$route.params.id}/boards`,
+        {
+          method: "GET",
+        }
+      );
+
+      const boards = await response.json();
+      const description = boards[this.boardId].list[itemId].description;
+      this.descriptionText = description;
+    },
+    async addDescription(boardId, itemId) {
+      const { status } = await fetch(
+        `/api/projects/${this.$route.params.id}/board/description`,
+        {
+          method: "POST",
+          body: JSON.stringify({
+            boardId,
+            itemId,
+            descriptionText: this.descriptionText,
+          }),
+        }
+      );
+
+      if (status === 201) {
+        this.fetchDescriptionText(itemId);
+      }
     },
   },
 };

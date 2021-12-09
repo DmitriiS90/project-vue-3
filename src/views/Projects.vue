@@ -21,7 +21,14 @@
         v-on:click="getProjectById(project.id)"
         v-bind:to="{ name: 'Project', params: { id: project.id } }"
       >
-        <p>Project: {{ project.name }}</p>
+        <p>
+          Project: {{ project.name }}
+          <!-- <Button
+            value="X"
+            appearance="subtle"
+            @click.prevent="deleteProject(project.id)"
+          /> -->
+        </p>
       </router-link>
     </div>
     <p v-else>NO PROJECTS</p>
@@ -49,7 +56,6 @@ export default {
         method: "GET",
       });
       const projects = await response.json();
-
       this.$store.dispatch("fetchProjects", projects);
     },
     async createProject() {
@@ -73,6 +79,13 @@ export default {
         this.$store.dispatch("setProject", project);
       }
     },
+    // async deleteProject(projectId) {
+    //   const response = await fetch(`/api/projecty/${projectId}`, {
+    //     method: "DELETE",
+    //   });
+    //   console.log(await response.json());
+    //   this.fetchProjects();
+    // },
   },
 };
 </script>

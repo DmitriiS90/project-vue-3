@@ -42,7 +42,6 @@ export function makeServer({ environment = "development" } = {}) {
         accessToken: [],
         refreshToken: [],
         projects: [],
-        boards: [],
       });
     },
 
@@ -97,10 +96,6 @@ export function makeServer({ environment = "development" } = {}) {
         schema.db.projects.insert({ name, boards: [] });
       });
 
-      this.get("/boards", (schema) => {
-        return schema.db.boards;
-      });
-
       this.post("/projects/:id/boards", async (schema, request) => {
         const id = +request.params.id;
 
@@ -109,7 +104,6 @@ export function makeServer({ environment = "development" } = {}) {
         project.boards.push({ id: project.boards.length, name, list: [] });
 
         schema.db.projects.update({ id: +id }, project);
-        // schema.db.boards.insert({ name });
       });
 
       this.post("/projects/:id/board", async (schema, request) => {
@@ -120,7 +114,20 @@ export function makeServer({ environment = "development" } = {}) {
         project.boards[boardId].list.push({
           id: project.boards[boardId].list.length,
           listItem,
+          description: "",
         });
+
+        schema.db.projects.update({ id: +id }, project);
+      });
+
+      this.post("/projects/:id/board/description", async (schema, request) => {
+        const id = +request.params.id;
+
+        const { boardId, itemId, descriptionText } = JSON.parse(
+          request.requestBody
+        );
+        const project = schema.db.projects.find(id);
+        project.boards[boardId].list[itemId].description = descriptionText;
 
         schema.db.projects.update({ id: +id }, project);
       });
@@ -193,6 +200,12 @@ export function makeServer({ environment = "development" } = {}) {
 
         return schema.db.users;
       });
+
+      // this.del(`/projecty/:id`, async (schema, request) => {
+      //   const id = +request.params.id;
+
+      //   return schema.db.projects.find(id).destroy();
+      // });
     },
   });
 

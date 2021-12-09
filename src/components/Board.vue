@@ -22,6 +22,8 @@
         <div v-if="showDescription == item.id">
           <Description
             :name="item.listItem"
+            :boardId="this.boardId"
+            :itemId="item.id"
             @closeDescription="closeDescription"
           />
         </div>
@@ -108,11 +110,17 @@ export default {
   &-list {
     padding: 10px;
     &-item {
+      display: flex;
+      align-items: center;
+      // justify-content: end;
       padding: 2px 0;
       border-bottom: rgb(179, 173, 173) 1px solid;
       &:hover {
         border-radius: 5px;
         background-color: rgb(255, 255, 255);
+      }
+      p {
+        flex: 1;
       }
     }
   }
