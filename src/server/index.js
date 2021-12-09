@@ -94,7 +94,7 @@ export function makeServer({ environment = "development" } = {}) {
       this.post("/projects", async (schema, request) => {
         const { name } = JSON.parse(request.requestBody);
 
-        schema.db.projects.insert({ name });
+        schema.db.projects.insert({ name, boards: [] });
       });
 
       this.get("/boards", (schema) => {
@@ -106,16 +106,23 @@ export function makeServer({ environment = "development" } = {}) {
 
         const { name } = JSON.parse(request.requestBody);
         const project = schema.db.projects.find(id);
-
-        if (project.boards) {
-          project.boards.push({ name });
-        } else {
-          project.boards = [];
-          project.boards.push({ name });
-        }
+        project.boards.push({ id: project.boards.length, name, list: [] });
 
         schema.db.projects.update({ id: +id }, project);
         // schema.db.boards.insert({ name });
+      });
+
+      this.post("/projects/:id/board", async (schema, request) => {
+        const id = +request.params.id;
+
+        const { boardId, listItem } = JSON.parse(request.requestBody);
+        const project = schema.db.projects.find(id);
+        project.boards[boardId].list.push({
+          id: project.boards[boardId].list.length,
+          listItem,
+        });
+
+        schema.db.projects.update({ id: +id }, project);
       });
 
       this.post("/token", async (schema, request) => {

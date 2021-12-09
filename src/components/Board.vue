@@ -7,13 +7,21 @@
         <Field className="input" v-model.value="listItem" />
       </div>
       <div>
-        <Button value="Add ITEM" appearance="primary" @click="addItem()" />
+        <Button
+          value="Add ITEM"
+          appearance="primary"
+          @click="addListItem(this.boardId)"
+        />
       </div>
     </div>
 
     <div v-if="!!boardList.length" class="board-list">
       <div v-for="item in boardList" :key="item.id" class="board-list-item">
-        {{ item.listItem }}
+        <p @click="openDescription(item.id)">{{ item.listItem }}</p>
+
+        <div v-if="showDescription == item.id" @click="closeDescription">
+          <Description :name="item.listItem" />
+        </div>
       </div>
     </div>
     <p v-else>NO ITEMS</p>
@@ -21,29 +29,67 @@
 </template>
 
 <script>
-import Button from "../components/Button.vue";
-import Field from "../components/Field.vue";
+import Button from "./Button.vue";
+import Field from "./Field.vue";
+import Description from "./Description.vue";
 export default {
-  components: { Button, Field },
+  components: { Button, Field, Description },
   data() {
     return {
       listItem: "",
+      boardList: [],
+      showDescription: null,
     };
+  },
+  created() {
+    fetch(`/api/projects/${this.$route.params.id}/boards`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (!data) {
+          data = [];
+        }
+        this.boardList = data[this.boardId].list;
+      });
   },
   props: {
     name: {
       type: String,
       default: "",
     },
-  },
-  computed: {
-    boardList() {
-      return this.$store.getters.getBoardList;
+    boardId: {
+      type: Number,
     },
   },
   methods: {
-    addItem() {
-      this.$store.dispatch("addBoardListItem", { listItem: this.listItem });
+    async fetchBoardList() {
+      const response = await fetch(
+        `/api/projects/${this.$route.params.id}/boards`,
+        {
+          method: "GET",
+        }
+      );
+
+      const boards = await response.json();
+      this.boardList = boards[this.boardId].list;
+    },
+    async addListItem(boardId) {
+      const { status } = await fetch(
+        `/api/projects/${this.$route.params.id}/board`,
+        {
+          method: "POST",
+          body: JSON.stringify({ boardId, listItem: this.listItem }),
+        }
+      );
+
+      if (status === 201) {
+        this.fetchBoardList(boardId);
+      }
+    },
+    openDescription(itemId) {
+      this.showDescription = itemId;
+    },
+    closeDescription() {
+      this.showDescription = null;
     },
   },
 };
@@ -51,6 +97,7 @@ export default {
 
 <style lang="scss" scoped>
 .board {
+  cursor: pointer;
   border: brown 1px solid;
   border-radius: 10px;
   padding: 15px 50px;
@@ -59,7 +106,11 @@ export default {
     padding: 10px;
     &-item {
       padding: 2px 0;
-      border-bottom: black 1px solid;
+      border-bottom: rgb(179, 173, 173) 1px solid;
+      &:hover {
+        border-radius: 5px;
+        background-color: rgb(255, 255, 255);
+      }
     }
   }
 }

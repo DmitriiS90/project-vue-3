@@ -17,7 +17,7 @@
 
     <div v-if="!!boards.length" class="project-boards">
       <div v-for="board in boards" :key="board.id">
-        <Board :name="board.name" />
+        <Board :name="board.name" :boardId="+board.id" />
       </div>
     </div>
     <p v-else>NO BOARDS</p>
@@ -39,10 +39,10 @@ export default {
     fetch(`/api/projects/${this.$route.params.id}/boards`)
       .then((res) => res.json())
       .then((data) => {
-        console.log(data);
         if (!data) {
           data = [];
         }
+        console.log(data);
         this.$store.dispatch("fetchBoards", data);
       });
   },
@@ -61,7 +61,6 @@ export default {
       });
 
       const boards = await response.json();
-      // debugger;
       this.$store.dispatch("fetchBoards", boards);
     },
     async createBoard(projectId) {

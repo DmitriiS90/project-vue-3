@@ -106,7 +106,7 @@ export default {
       margin: 15px;
     }
     p:hover {
-      background-color: #eb5b37;
+      background-color: #d15232;
     }
   }
 }
