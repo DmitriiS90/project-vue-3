@@ -19,8 +19,11 @@
       <div v-for="item in boardList" :key="item.id" class="board-list-item">
         <p @click="openDescription(item.id)">{{ item.listItem }}</p>
 
-        <div v-if="showDescription == item.id" @click="closeDescription">
-          <Description :name="item.listItem" />
+        <div v-if="showDescription == item.id">
+          <Description
+            :name="item.listItem"
+            @closeDescription="closeDescription"
+          />
         </div>
       </div>
     </div>

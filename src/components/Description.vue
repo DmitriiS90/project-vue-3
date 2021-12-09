@@ -6,12 +6,22 @@
         <p>Description</p>
         <textarea></textarea>
       </div>
+      <div class="description-controls">
+        <Button value="Save" appearance="primary" />
+        <Button
+          value="Cancel"
+          appearance="danger"
+          @click="$emit('closeDescription')"
+        />
+      </div>
     </div>
   </div>
 </template>
 
 <script>
+import Button from "./Button.vue";
 export default {
+  components: { Button },
   data() {
     return {
       showModal: false,
@@ -61,6 +71,14 @@ export default {
       width: 100%;
       height: 100px;
     }
+  }
+  &-controls {
+    padding-top: 20px;
+    width: 25%;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
   }
 }
 </style>
