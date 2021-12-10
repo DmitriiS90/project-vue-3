@@ -8,7 +8,7 @@
       </div>
       <div>
         <Button
-          value="Create board"
+          value="Create card"
           appearance="danger"
           @click="createCard(this.board.id)"
         />
@@ -78,8 +78,9 @@ export default {
       this.cards = cards;
     },
     async createCard() {
+      const idList = "61b30dc848920d0f13349430";
       await fetch(
-        `https://api.trello.com/1/cards?idList=${this.board.id}?key=${this.apiKey}&token=${this.apiToken}`,
+        `https://api.trello.com/1/cards?idList=${idList}&key=${this.apiKey}&token=${this.apiToken}`,
         {
           method: "POST",
           headers: {

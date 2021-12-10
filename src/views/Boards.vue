@@ -14,7 +14,6 @@
       <router-link
         v-for="board in boards"
         :key="board.id"
-        v-on:click="getProjectById(board.id)"
         v-bind:to="{ name: 'Board', params: { id: board.id } }"
       >
         <p>Project: {{ board.name }}</p>
@@ -62,34 +61,6 @@ export default {
       );
       const boards = await response.json();
       this.boards = boards;
-    },
-    async fetchProjects() {
-      const response = await fetch("/api/projects", {
-        method: "GET",
-      });
-      const projects = await response.json();
-      this.$store.dispatch("fetchProjects", projects);
-    },
-    async createProject() {
-      const { status } = await fetch("/api/projects", {
-        method: "POST",
-        body: JSON.stringify({ name: this.name }),
-      });
-
-      if (status === 201) {
-        this.fetchProjects();
-      }
-    },
-    async getProjectById(id) {
-      const response = await fetch(`/api/projects/${id}`, {
-        method: "GET",
-      });
-
-      if (response.status === 200) {
-        const project = await response.json();
-
-        this.$store.dispatch("setProject", project);
-      }
     },
   },
 };
