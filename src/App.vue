@@ -11,15 +11,6 @@ export default {
   components: {
     Layout,
   },
-  // created() {
-  //   fetch("/api/users")
-  //     .then((res) => res.json())
-  //     .then((data) => {
-  //       if (!data.length) {
-  //         this.$router.push("/login");
-  //       }
-  //     });
-  // },
 };
 </script>
 

@@ -8,7 +8,7 @@
   />
   <NestedList
     value="Projects"
-    :items="[{ value: 'PROJECTS', route: '/projects' }]"
+    :items="[{ value: 'Boards', route: '/boards' }]"
   />
   <NestedList value="Settings" />
 </template>

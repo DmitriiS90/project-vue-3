@@ -1,6 +1,6 @@
 import Home from "../views/Home.vue";
-import Projects from "../views/Projects.vue";
-import Project from "../components/Project.vue";
+import Boards from "../views/Boards.vue";
+import Board from "../components/Board.vue";
 import Profile from "../views/Profile.vue";
 import Login from "../views/Login.vue";
 import SignUp from "../views/SignUp.vue";
@@ -15,17 +15,17 @@ const routes = [
     },
   },
   {
-    path: "/projects",
-    name: "Projects",
-    component: Projects,
+    path: "/boards",
+    name: "Boards",
+    component: Boards,
     meta: {
       layout: true,
     },
   },
   {
-    path: "/projects/:id",
-    name: "Project",
-    component: Project,
+    path: "/boards/:id",
+    name: "Board",
+    component: Board,
     meta: {
       layout: true,
     },

@@ -1,37 +1,26 @@
 <template>
   <div class="projects">
-    <h1>Projects</h1>
+    <h1>Boards</h1>
 
     <div class="projects-form">
       <div>
         <Field className="input" v-model.value="name" />
       </div>
       <div>
-        <Button
-          value="Create project"
-          appearance="danger"
-          @click="createProject"
-        />
+        <Button value="Create board" appearance="danger" @click="fetchBoards" />
       </div>
     </div>
-    <div class="projects-list" v-if="!!projects.length">
+    <div class="projects-list" v-if="!!boards.length">
       <router-link
-        v-for="project in projects"
-        :key="project.id"
-        v-on:click="getProjectById(project.id)"
-        v-bind:to="{ name: 'Project', params: { id: project.id } }"
+        v-for="board in boards"
+        :key="board.id"
+        v-on:click="getProjectById(board.id)"
+        v-bind:to="{ name: 'Board', params: { id: board.id } }"
       >
-        <p>
-          Project: {{ project.name }}
-          <!-- <Button
-            value="X"
-            appearance="subtle"
-            @click.prevent="deleteProject(project.id)"
-          /> -->
-        </p>
+        <p>Project: {{ board.name }}</p>
       </router-link>
     </div>
-    <p v-else>NO PROJECTS</p>
+    <p v-else>NO BOARDS</p>
   </div>
 </template>
 
@@ -43,7 +32,11 @@ export default {
   data() {
     return {
       name: "",
+      boards: [],
     };
+  },
+  created() {
+    this.fetchBoards();
   },
   computed: {
     projects() {
@@ -51,6 +44,25 @@ export default {
     },
   },
   methods: {
+    async fetchBoards() {
+      const apiKey = "dc599fe2c56f5a3c881cc6c67bbd95af";
+      const apiToken =
+        "6a8b79d7762879acb352ad2b3f0715fd4f53e1710aa6ef9cbdaee0adeb1de3e5";
+
+      const response = await fetch(
+        `https://api.trello.com/1/members/me/boards/?key=${apiKey}&token=${apiToken}`,
+        {
+          method: "GET",
+          headers: {
+            Accept: "application/json; charset=utf-8",
+            "Accept-Language": "ru-RU,ru;q=0.5",
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const boards = await response.json();
+      this.boards = boards;
+    },
     async fetchProjects() {
       const response = await fetch("/api/projects", {
         method: "GET",
@@ -79,13 +91,6 @@ export default {
         this.$store.dispatch("setProject", project);
       }
     },
-    // async deleteProject(projectId) {
-    //   const response = await fetch(`/api/projecty/${projectId}`, {
-    //     method: "DELETE",
-    //   });
-    //   console.log(await response.json());
-    //   this.fetchProjects();
-    // },
   },
 };
 </script>
