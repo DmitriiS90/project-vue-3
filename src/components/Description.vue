@@ -1,7 +1,7 @@
 <template>
   <div class="description">
     <div class="description-container">
-      <h3 class="description-title">{{ this.name }}</h3>
+      <h3 class="description-title">{{ this.cardName }}</h3>
       <div class="description-text">
         <p>Description</p>
         <textarea v-model="descriptionText"></textarea>
@@ -15,7 +15,7 @@
         <Button
           value="Cancel"
           appearance="danger"
-          @click="$emit('closeDescription')"
+          @click.prevent="$emit('closeDescription')"
         />
       </div>
     </div>
@@ -32,19 +32,9 @@ export default {
       descriptionText: "",
     };
   },
-  created() {
-    fetch(`/api/projects/${this.$route.params.id}/boards`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (!data) {
-          data = [];
-        }
-        const description = data[this.boardId].list[this.itemId].description;
-        this.descriptionText = description;
-      });
-  },
+  created() {},
   props: {
-    name: {
+    cardName: {
       type: String,
       default: "",
     },

@@ -10,15 +10,17 @@
         <Button
           value="Create list"
           appearance="danger"
-          @click="createCard(this.board.id)"
+          @click="createList(this.board.id)"
         />
       </div>
     </div>
 
     <div v-if="!!this.lists.length" class="board-cards">
-      <div v-for="list in this.lists" :key="list.id">
-        <List :name="list.name" :listId="list.id" />
-      </div>
+      <Container @drop="onDrop" class="board-cards-container">
+        <Draggable v-for="list in this.lists" :key="list.id">
+          <List :name="list.name" :listId="list.id" />
+        </Draggable>
+      </Container>
     </div>
     <p v-else>NO CARDS</p>
   </div>
@@ -28,8 +30,9 @@
 import Button from "./Button.vue";
 import Field from "./Field.vue";
 import List from "./List.vue";
+import { Container, Draggable } from "vue3-smooth-dnd/dist/vue3-smooth-dnd.js";
 export default {
-  components: { Button, Field, List },
+  components: { Button, Field, List, Container, Draggable },
   data() {
     return {
       name: "",
@@ -76,6 +79,45 @@ export default {
       // debugger;
       this.lists = board.lists;
     },
+    async createList(boardId) {
+      const response = await fetch(
+        `https://api.trello.com/1/boards/${boardId}/lists/?key=${this.apiKey}&token=${this.apiToken}&name=${this.name}`,
+        {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+          },
+        }
+      )
+        .then((response) => {
+          this.fetchLists(boardId);
+          console.log(`Response: ${response.status} ${response.statusText}`);
+          return response.text();
+        })
+        .then((text) => console.log(text))
+        .catch((err) => console.error(err));
+      const board = await response.json();
+      // debugger;
+      this.lists = board.lists;
+    },
+    onDrop(dropResult) {
+      this.lists = this.applyDrag(this.lists, dropResult);
+    },
+    applyDrag(arr, dragResult) {
+      const { removedIndex, addedIndex, payload } = dragResult;
+
+      if (removedIndex === null && addedIndex === null) return arr;
+      const result = [...arr];
+      let itemToAdd = payload;
+
+      if (removedIndex !== null) {
+        itemToAdd = result.splice(removedIndex, 1)[0];
+      }
+      if (addedIndex !== null) {
+        result.splice(addedIndex, 0, itemToAdd);
+      }
+      return result;
+    },
   },
 };
 </script>
@@ -97,6 +139,11 @@ export default {
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
+    &-container {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
   }
 }
 </style>

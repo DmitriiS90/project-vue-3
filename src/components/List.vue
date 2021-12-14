@@ -16,13 +16,19 @@
     </div>
 
     <div v-if="!!this.cards.length" class="list-cards">
-      <div v-for="card in this.cards" :key="card.id" class="list-cards-item">
-        <Card
-          :name="card.name"
-          :cardId="card.id"
-          @deleteCard="deleteCard(card.id)"
-        />
-      </div>
+      <Container @drop="onDrop">
+        <Draggable
+          v-for="card in this.cards"
+          :key="card.id"
+          class="list-cards-item"
+        >
+          <Card
+            :name="card.name"
+            :cardId="card.id"
+            @deleteCard="deleteCard(card.id)"
+          />
+        </Draggable>
+      </Container>
     </div>
     <p v-else>NO CARDS</p>
   </div>
@@ -32,8 +38,9 @@
 import Button from "./Button.vue";
 import Field from "./Field.vue";
 import Card from "./Card.vue";
+import { Container, Draggable } from "vue3-smooth-dnd/dist/vue3-smooth-dnd.js";
 export default {
-  components: { Button, Field, Card },
+  components: { Button, Field, Card, Container, Draggable },
   data() {
     return {
       cardName: "",
@@ -99,6 +106,24 @@ export default {
           return response.text();
         })
         .then((text) => console.log(text));
+    },
+    onDrop(dropResult) {
+      this.cards = this.applyDrag(this.cards, dropResult);
+    },
+    applyDrag(arr, dragResult) {
+      const { removedIndex, addedIndex, payload } = dragResult;
+
+      if (removedIndex === null && addedIndex === null) return arr;
+      const result = [...arr];
+      let itemToAdd = payload;
+
+      if (removedIndex !== null) {
+        itemToAdd = result.splice(removedIndex, 1)[0];
+      }
+      if (addedIndex !== null) {
+        result.splice(addedIndex, 0, itemToAdd);
+      }
+      return result;
     },
   },
 };

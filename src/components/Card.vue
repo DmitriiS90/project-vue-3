@@ -1,15 +1,18 @@
 <template>
-  <div class="card">
+  <div class="card" @click.prevent="openDescription(this.cardId)">
     <p>Card: {{ this.name }}</p>
     <Button value="X" appearance="warning" @click="$emit('deleteCard')" />
+  </div>
+  <div v-if="showDescription === this.cardId">
+    <Description :cardName="this.name" @closeDescription="closeDescription" />
   </div>
 </template>
 
 <script>
 import Button from "./Button.vue";
-// import Description from "./Description.vue";
+import Description from "./Description.vue";
 export default {
-  components: { Button /*Description*/ },
+  components: { Button, Description },
   data() {
     return {
       listItem: "",
@@ -20,16 +23,8 @@ export default {
         "6a8b79d7762879acb352ad2b3f0715fd4f53e1710aa6ef9cbdaee0adeb1de3e5",
     };
   },
-  created() {
-    fetch(`/api/projects/${this.$route.params.id}/boards`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (!data) {
-          data = [];
-        }
-        this.boardList = data[this.cardId].list;
-      });
-  },
+  created() {},
+  emits: ["deleteCard"],
   props: {
     name: {
       type: String,
@@ -40,8 +35,8 @@ export default {
     },
   },
   methods: {
-    openDescription(itemId) {
-      this.showDescription = itemId;
+    openDescription(cardId) {
+      this.showDescription = cardId;
     },
     closeDescription() {
       this.showDescription = null;
