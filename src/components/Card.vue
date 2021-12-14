@@ -1,49 +1,23 @@
 <template>
   <div class="card">
     <p>Card: {{ this.name }}</p>
-
-    <div class="card-form">
-      <div>
-        <Field className="input" v-model.value="listItem" />
-      </div>
-      <div>
-        <Button
-          value="Add ITEM"
-          appearance="primary"
-          @click="addListItem(this.cardId)"
-        />
-      </div>
-    </div>
-
-    <div v-if="!!boardList.length" class="card-list">
-      <div v-for="item in boardList" :key="item.id" class="card-list-item">
-        <p @click="openDescription(item.id)">{{ item.listItem }}</p>
-
-        <div v-if="showDescription == item.id">
-          <Description
-            :name="item.listItem"
-            :cardId="this.cardId"
-            :itemId="item.id"
-            @closeDescription="closeDescription"
-          />
-        </div>
-      </div>
-    </div>
-    <p v-else>NO ITEMS</p>
+    <Button value="X" appearance="warning" @click="$emit('deleteCard')" />
   </div>
 </template>
 
 <script>
 import Button from "./Button.vue";
-import Field from "./Field.vue";
-import Description from "./Description.vue";
+// import Description from "./Description.vue";
 export default {
-  components: { Button, Field, Description },
+  components: { Button /*Description*/ },
   data() {
     return {
       listItem: "",
       boardList: [],
       showDescription: null,
+      apiKey: "dc599fe2c56f5a3c881cc6c67bbd95af",
+      apiToken:
+        "6a8b79d7762879acb352ad2b3f0715fd4f53e1710aa6ef9cbdaee0adeb1de3e5",
     };
   },
   created() {
@@ -66,30 +40,6 @@ export default {
     },
   },
   methods: {
-    async fetchBoardList() {
-      const response = await fetch(
-        `/api/projects/${this.$route.params.id}/boards`,
-        {
-          method: "GET",
-        }
-      );
-
-      const boards = await response.json();
-      this.boardList = boards[this.cardId].list;
-    },
-    async addListItem(cardId) {
-      const { status } = await fetch(
-        `/api/projects/${this.$route.params.id}/board`,
-        {
-          method: "POST",
-          body: JSON.stringify({ cardId, listItem: this.listItem }),
-        }
-      );
-
-      if (status === 201) {
-        this.fetchBoardList(cardId);
-      }
-    },
     openDescription(itemId) {
       this.showDescription = itemId;
     },
@@ -102,7 +52,10 @@ export default {
 
 <style lang="scss" scoped>
 .card {
-  width: 250px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  width: 100%;
   cursor: pointer;
   border: brown 1px solid;
   border-radius: 10px;

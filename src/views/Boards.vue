@@ -7,7 +7,7 @@
         <Field className="input" v-model.value="name" />
       </div>
       <div>
-        <Button value="Create board" appearance="danger" @click="fetchBoards" />
+        <Button value="Create board" appearance="danger" @click="createBoard" />
       </div>
     </div>
     <div class="projects-list" v-if="!!boards.length">
@@ -32,6 +32,9 @@ export default {
     return {
       name: "",
       boards: [],
+      apiKey: "dc599fe2c56f5a3c881cc6c67bbd95af",
+      apiToken:
+        "6a8b79d7762879acb352ad2b3f0715fd4f53e1710aa6ef9cbdaee0adeb1de3e5",
     };
   },
   created() {
@@ -44,12 +47,8 @@ export default {
   },
   methods: {
     async fetchBoards() {
-      const apiKey = "dc599fe2c56f5a3c881cc6c67bbd95af";
-      const apiToken =
-        "6a8b79d7762879acb352ad2b3f0715fd4f53e1710aa6ef9cbdaee0adeb1de3e5";
-
       const response = await fetch(
-        `https://api.trello.com/1/members/me/boards/?key=${apiKey}&token=${apiToken}`,
+        `https://api.trello.com/1/members/me/boards/?key=${this.apiKey}&token=${this.apiToken}`,
         {
           method: "GET",
           headers: {
@@ -61,6 +60,21 @@ export default {
       );
       const boards = await response.json();
       this.boards = boards;
+    },
+    async createBoard() {
+      await fetch(
+        `https://api.trello.com/1/boards/?key=${this.apiKey}&token=${this.apiToken}&name=${this.name}`,
+        {
+          method: "POST",
+        }
+      )
+        .then((response) => {
+          this.fetchBoards();
+          console.log(`Response: ${response.status} ${response.statusText}`);
+          return response.text();
+        })
+        .then((text) => console.log(text))
+        .catch((err) => console.error(err));
     },
   },
 };

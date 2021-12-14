@@ -8,16 +8,16 @@
       </div>
       <div>
         <Button
-          value="Create card"
+          value="Create list"
           appearance="danger"
           @click="createCard(this.board.id)"
         />
       </div>
     </div>
 
-    <div v-if="!!this.cards.length" class="board-cards">
-      <div v-for="card in this.cards" :key="card.id">
-        <Card :name="card.name" :cardId="card.id" />
+    <div v-if="!!this.lists.length" class="board-cards">
+      <div v-for="list in this.lists" :key="list.id">
+        <List :name="list.name" :listId="list.id" />
       </div>
     </div>
     <p v-else>NO CARDS</p>
@@ -25,16 +25,16 @@
 </template>
 
 <script>
-import Card from "./Card.vue";
 import Button from "./Button.vue";
 import Field from "./Field.vue";
+import List from "./List.vue";
 export default {
-  components: { Card, Button, Field },
+  components: { Button, Field, List },
   data() {
     return {
       name: "",
       board: null,
-      cards: [],
+      lists: [],
       apiKey: "dc599fe2c56f5a3c881cc6c67bbd95af",
       apiToken:
         "6a8b79d7762879acb352ad2b3f0715fd4f53e1710aa6ef9cbdaee0adeb1de3e5",
@@ -61,38 +61,20 @@ export default {
           },
         }
       );
-      // debugger;
       const board = await response.json();
       this.board = { id: board.id, name: board.name };
-      this.fetchCards(this.board.id);
+      this.fetchLists(this.board.id);
     },
-    async fetchCards(boardId) {
+    async fetchLists(boardId) {
       const response = await fetch(
-        `https://api.trello.com/1/boards/${boardId}/cards/?key=${this.apiKey}&token=${this.apiToken}`,
+        `https://api.trello.com/1/boards/${boardId}/?key=${this.apiKey}&token=${this.apiToken}&fields=name&lists=all&list_fields=all`,
         {
           method: "GET",
         }
       );
-      const cards = await response.json();
-      debugger;
-      this.cards = cards;
-    },
-    async createCard() {
-      const idList = "61b30dc848920d0f13349430";
-      await fetch(
-        `https://api.trello.com/1/cards?idList=${idList}&key=${this.apiKey}&token=${this.apiToken}`,
-        {
-          method: "POST",
-          headers: {
-            Accept: "application/json",
-          },
-        }
-      )
-        .then((response) => {
-          console.log(`Response: ${response.status} ${response.statusText}`);
-          return response.text();
-        })
-        .then((text) => console.log(text));
+      const board = await response.json();
+      // debugger;
+      this.lists = board.lists;
     },
   },
 };
