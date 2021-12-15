@@ -18,11 +18,15 @@
         />
       </div>
       <div class="buttons">
-        <Button value="Log in" appearance="primary" v-on:click.prevent="auth" />
+        <Button
+          value="Log in"
+          appearance="primary"
+          v-on:click.prevent="signIn"
+        />
         <Button
           value="Sign up"
           appearance="warning"
-          v-on:click.prevent="signUpUser"
+          v-on:click.prevent="signUp"
         />
       </div>
     </form>
@@ -32,6 +36,7 @@
 <script>
 import Button from "./Button.vue";
 import Field from "./Field.vue";
+const jwt = require("jsonwebtoken");
 
 export default {
   data() {
@@ -50,11 +55,14 @@ export default {
     Button,
   },
   methods: {
-    signUpUser() {
+    signUp() {
       const user = JSON.stringify({
         login: this.login,
         password: this.password,
       });
+
+      localStorage.setItem("token", jwt.sign(this.login, "secretKey"));
+      this.$store.dispatch("signUp", JSON.parse(user));
 
       fetch("/api/auth/signup", {
         method: "POST",
@@ -63,23 +71,29 @@ export default {
         },
         body: user,
       });
+      // this.$router.push("/signup");
     },
-    auth() {
-      fetch("/api/token", {
+    async signIn() {
+      const user = JSON.stringify({
+        login: this.login,
+        password: this.password,
+      });
+
+      const response = await fetch("/api/token", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          // Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
         },
-        body: JSON.stringify(this.login),
-      })
-        .then((response) => {
-          return response.json();
-        })
-        .then((data) => {
-          console.log(data);
-        });
-      this.$router.push("/");
+        body: user,
+      });
+
+      if (response.status !== 404 || response.status !== 401) {
+        // const { accessToken, refreshToken } = response.data;
+        this.$store.dispatch("setAuth", true);
+        /*localStorage.set("accessToken", accessToken);
+        localStorage.set("refreshToken", refreshToken);*/
+        this.$router.push("/");
+      }
     },
   },
 };
@@ -97,6 +111,9 @@ export default {
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
     .content {
       padding: 0 30px 30px 30px;
+      input {
+        margin-top: 25px;
+      }
     }
     .buttons {
       display: flex;

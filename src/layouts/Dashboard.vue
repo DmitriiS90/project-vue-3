@@ -1,7 +1,7 @@
 <template>
-  <div class="menu">
+  <div class="dashboard">
     <div
-      class="menu-button"
+      class="dashboard-button"
       v-bind:class="{ open: showMenu }"
       v-on:click="toggleShowMenu"
     >
@@ -9,27 +9,18 @@
     </div>
 
     <transition name="animate">
-      <div class="menu-items" v-if="showMenu">
-        <NestedList
-          value="Spaces"
-          :items="[
-            { value: 'Home', route: '/' },
-            { value: 'About', route: '/about' },
-            { value: 'Profile', route: '/profile' },
-          ]"
-        />
-        <NestedList value="Posts" />
-        <NestedList value="Settings" />
+      <div class="dashboard-items" v-if="showMenu">
+        <Menu />
       </div>
     </transition>
   </div>
 </template>
 
 <script>
-import NestedList from "../components/NestedList.vue";
 import MenuButton from "../components/MenuButton.vue";
+import Menu from "../components/Menu.vue";
 export default {
-  components: { NestedList, MenuButton },
+  components: { MenuButton, Menu },
   data() {
     return {
       showMenu: false,
@@ -44,7 +35,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.menu {
+.dashboard {
   background: white;
   padding: 0 20px;
   &-button {
