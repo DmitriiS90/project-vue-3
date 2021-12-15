@@ -50,7 +50,7 @@ export default {
   display: flex;
   justify-content: space-around;
   align-items: center;
-  width: 100%;
+  // width: 100%;
   cursor: pointer;
   border: brown 1px solid;
   border-radius: 10px;

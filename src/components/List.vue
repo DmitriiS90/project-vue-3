@@ -16,11 +16,15 @@
     </div>
 
     <div v-if="!!this.cards.length" class="list-cards">
-      <Container @drop="onDrop">
+      <Container
+        orientation="vertical"
+        group-name="cards"
+        @drop="onCardDrop($event)"
+      >
         <Draggable
+          class="list-cards-item"
           v-for="card in this.cards"
           :key="card.id"
-          class="list-cards-item"
         >
           <Card
             :name="card.name"
@@ -64,6 +68,15 @@ export default {
     },
   },
   methods: {
+    getChildPayload(cardId) {
+      return (index) => {
+        console.log("getChildPayload", cardId, index);
+        return {
+          cardId,
+          index,
+        };
+      };
+    },
     async fetchCards() {
       const response = await fetch(
         `https://api.trello.com/1/lists/${this.listId}/cards/?key=${this.apiKey}&token=${this.apiToken}`,
@@ -76,7 +89,6 @@ export default {
       this.cards = cards;
     },
     async createCard(listId) {
-      // const idList = "61b30dc848920d0f13349430";
       await fetch(
         `https://api.trello.com/1/cards?idList=${listId}&key=${this.apiKey}&token=${this.apiToken}&name=${this.cardName}`,
         {
@@ -107,11 +119,26 @@ export default {
         })
         .then((text) => console.log(text));
     },
-    onDrop(dropResult) {
-      this.cards = this.applyDrag(this.cards, dropResult);
+    async updateCard(cardId, pos) {
+      await fetch(
+        `https://api.trello.com/1/card/${cardId}?key=${this.apiKey}&token=${this.apiToken}&pos=${pos}`,
+        {
+          method: "PUT",
+        }
+      ).then((response) => {
+        this.fetchCards();
+        return response.text();
+      });
+    },
+    onCardDrop(dropResult) {
+      let cards = Object.assign({}, this.cards);
+
+      cards = this.applyDrag(cards, dropResult);
+      this.cards = cards;
     },
     applyDrag(arr, dragResult) {
       const { removedIndex, addedIndex, payload } = dragResult;
+      //console.log(arr[removedIndex].pos, removedIndex, addedIndex);
 
       if (removedIndex === null && addedIndex === null) return arr;
       const result = [...arr];

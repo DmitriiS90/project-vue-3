@@ -58,23 +58,23 @@ export default {
       const description = boards[this.boardId].list[itemId].description;
       this.descriptionText = description;
     },
-    async addDescription(boardId, itemId) {
-      const { status } = await fetch(
-        `/api/projects/${this.$route.params.id}/board/description`,
-        {
-          method: "POST",
-          body: JSON.stringify({
-            boardId,
-            itemId,
-            descriptionText: this.descriptionText,
-          }),
-        }
-      );
+    // async addDescription(boardId, itemId) {
+    //   const { status } = await fetch(
+    //     `/api/projects/${this.$route.params.id}/board/description`,
+    //     {
+    //       method: "POST",
+    //       body: JSON.stringify({
+    //         boardId,
+    //         itemId,
+    //         descriptionText: this.descriptionText,
+    //       }),
+    //     }
+    //   );
 
-      if (status === 201) {
-        this.fetchDescriptionText(itemId);
-      }
-    },
+    //   if (status === 201) {
+    //     this.fetchDescriptionText(itemId);
+    //   }
+    // },
   },
 };
 </script>
