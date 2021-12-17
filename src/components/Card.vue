@@ -4,7 +4,11 @@
     <Button value="X" appearance="warning" @click="$emit('deleteCard')" />
   </div>
   <div v-if="showDescription === this.cardId">
-    <Description :cardName="this.name" @closeDescription="closeDescription" />
+    <Description
+      :cardName="this.name"
+      :cardId="this.cardId"
+      @closeDescription="closeDescription"
+    />
   </div>
 </template>
 

@@ -21,7 +21,7 @@
         group-name="lists"
         tag="div"
         orientation="horizontal"
-        @drop="onColumnDrop($event)"
+        @drop="onListDrop($event)"
       >
         <Draggable
           class="board-list-container-dnd"
@@ -29,7 +29,7 @@
           :key="list.id"
         >
           <p>{{ list.name }}</p>
-          <div v-for="card in this.board.cards" :key="card.id">
+          <div v-for="card in this.cards" :key="card.id">
             <Container
               v-if="card.idList === list.id"
               group-name="cards"
@@ -97,6 +97,7 @@ export default {
       this.board = boardData;
       this.lists = boardData.lists;
       this.cards = boardData.cards;
+      console.log(this.cards);
     },
     async fetchLists(boardId) {
       const response = await fetch(
@@ -130,59 +131,40 @@ export default {
       // debugger;
       this.lists = board.lists;
     },
-    onColumnDrop(dropResult) {
-      this.lists = this.applyDrag(this.lists, dropResult);
-    },
     applyDrag(array, dragResult) {
       const { removedIndex, addedIndex, payload } = dragResult;
-      console.log("applyDrag", dragResult);
+      //console.log(arr[removedIndex].pos, removedIndex, addedIndex);
 
       if (removedIndex === null && addedIndex === null) return array;
-      let movedElement = payload;
-      let targetElement = null;
-      let result = [...array];
+      const result = [...array];
+      let itemToAdd = payload;
 
       if (removedIndex !== null) {
-        // movedElement = result.splice(removedIndex, 1);
-        movedElement = array[removedIndex];
+        itemToAdd = result.splice(removedIndex, 1)[0];
       }
-
       if (addedIndex !== null) {
-        // result = result.splice(addedIndex, 0, movedElement);
-        targetElement = array[addedIndex];
+        result.splice(addedIndex, 0, itemToAdd);
       }
-
-      const removedPosition = movedElement.pos;
-      const addePosition = targetElement.pos;
-
-      result[removedIndex].pos = addePosition;
-      result[addedIndex].pos = removedPosition;
-
-      console.log("result", movedElement.pos, targetElement.pos);
       return result;
     },
-    onCardDrop(columnId, dropResult) {
+    onListDrop(dropResult) {
+      this.lists = this.applyDrag(this.lists, dropResult);
+    },
+    onCardDrop(listId, dropResult) {
       if (dropResult.removedIndex !== null || dropResult.addedIndex !== null) {
-        const cards = [...this.board.cards];
-        const column = cards.filter((card) => card.id === columnId)[0];
-        const itemIndex = cards.indexOf(column);
-        let newColumn = Object.assign({}, column);
+        const cards = [...this.cards];
+        const list = this.lists.filter((list) => list.id === listId)[0];
+        const itemIndex = cards.indexOf(list);
+        let newList = [...list];
 
-        if (dropResult.removedIndex == null && dropResult.addedIndex >= 0) {
-          dropResult.payload.loading = true;
-          setTimeout(function () {
-            dropResult.payload.loading = false;
-          }, Math.random() * 5000 + 1000);
-        }
-
-        newColumn = this.applyDrag(newColumn, dropResult);
-        cards.splice(itemIndex, 1, newColumn);
-        this.board.cards = cards;
+        newList = this.applyDrag(newList, dropResult);
+        cards.splice(itemIndex, 1, newList);
+        this.cards = cards;
       }
     },
     getCardPayload(listId) {
       return (index) => {
-        return this.board.lists.filter((list) => list.id === listId)[index];
+        return this.cards.filter((card) => card.idList === listId)[0][index];
       };
     },
   },
