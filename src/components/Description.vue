@@ -45,7 +45,10 @@
                     v-if="showChecklist == checklist.id"
                   >
                     <span class="span">{{ checkItem.name }}</span>
-                    <input type="checkbox" />
+                    <input
+                      type="checkbox"
+                      @change="deleteCheckItem(checklist.id, checkItem.id)"
+                    />
                   </li>
                 </ul>
                 <Field
@@ -203,6 +206,15 @@ export default {
     async deleteChecklist(listId) {
       await fetch(
         `https://api.trello.com/1/checklists/${listId}?key=${this.apiKey}&token=${this.apiToken}`,
+        {
+          method: "DELETE",
+        }
+      );
+      this.fetchChecklists(this.cardId);
+    },
+    async deleteCheckItem(listId, checkItemId) {
+      await fetch(
+        `https://api.trello.com/1/checklists/${listId}/checkItems/${checkItemId}?key=${this.apiKey}&token=${this.apiToken}`,
         {
           method: "DELETE",
         }
