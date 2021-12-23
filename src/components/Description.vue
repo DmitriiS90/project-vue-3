@@ -82,8 +82,20 @@
           </div>
         </div>
 
-        <div class="description-actions">
-          <p>Actions</p>
+        <div class="description-comments">
+          <p @click="toggleComments" class="description-comments__title">
+            Comments
+          </p>
+          <div v-if="showComments">
+            <div class="description-comments__content" v-if="comments.length">
+              <ul v-for="comment in comments" :key="comment.id">
+                <li>{{ comment.data.text }}</li>
+              </ul>
+            </div>
+            <p v-else>no comments</p>
+            <Field className="input" v-model="comment" />
+            <Button value="+" appearance="primary" @click="addComment" />
+          </div>
         </div>
       </div>
       <Button
@@ -104,12 +116,15 @@ export default {
     return {
       showModal: false,
       showDescription: false,
-      showChecklists: false,
-      showChecklist: null,
       descriptionText: "",
+      showChecklists: false,
       checklists: [],
+      showChecklist: null,
       checklistName: "",
       listItem: "",
+      showComments: false,
+      comments: [],
+      comment: "",
       apiKey: "dc599fe2c56f5a3c881cc6c67bbd95af",
       apiToken:
         "6a8b79d7762879acb352ad2b3f0715fd4f53e1710aa6ef9cbdaee0adeb1de3e5",
@@ -144,6 +159,7 @@ export default {
       const card = await response.json();
       this.descriptionText = card.desc;
       this.fetchChecklists(cardId);
+      this.fetchComments(cardId);
     },
     async fetchChecklists(cardId) {
       const response = await fetch(
@@ -159,6 +175,21 @@ export default {
       this.checklists = checklists;
       // debugger;
       console.log(this.checklists);
+    },
+    async fetchComments(cardId) {
+      const response = await fetch(
+        `https://api.trello.com/1/cards/${cardId}/actions?key=${this.apiKey}&token=${this.apiToken}`,
+        {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+          },
+        }
+      );
+      const comments = await response.json();
+      this.comments = comments;
+      // debugger;
+      console.log(this.comments);
     },
     async addDescription(cardId) {
       await fetch(
@@ -184,6 +215,9 @@ export default {
     },
     toggleChecklist(checklistId) {
       this.showChecklist = checklistId;
+    },
+    toggleComments() {
+      this.showComments = !this.showComments;
     },
     async createChecklist() {
       await fetch(
@@ -220,6 +254,18 @@ export default {
         }
       );
       this.fetchChecklists(this.cardId);
+    },
+    async addComment() {
+      await fetch(
+        `https://api.trello.com/1/cards/${this.cardId}/actions/comments?key=${this.apiKey}&token=${this.apiToken}&text=${this.comment}`,
+        {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+          },
+        }
+      );
+      this.fetchComments(this.cardId);
     },
   },
 };
@@ -303,6 +349,16 @@ export default {
     &__item {
       width: 100%;
       font-size: 15px;
+    }
+  }
+  &-comments {
+    &__title:hover {
+      color: rgb(173, 27, 27);
+    }
+    &__content {
+      border: #555151 2px solid;
+      border-radius: 10px;
+      padding-left: 20px;
     }
   }
 }
