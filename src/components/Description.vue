@@ -43,14 +43,6 @@ export default {
       showModal: false,
       showDescription: false,
       descriptionText: "",
-      showChecklists: false,
-      checklists: [],
-      showChecklist: null,
-      checklistName: "",
-      listItem: "",
-      showComments: false,
-      comments: [],
-      comment: "",
       apiKey: "dc599fe2c56f5a3c881cc6c67bbd95af",
       apiToken:
         "6a8b79d7762879acb352ad2b3f0715fd4f53e1710aa6ef9cbdaee0adeb1de3e5",
@@ -84,37 +76,6 @@ export default {
       );
       const card = await response.json();
       this.descriptionText = card.desc;
-      this.fetchChecklists(cardId);
-      this.fetchComments(cardId);
-    },
-    async fetchChecklists(cardId) {
-      const response = await fetch(
-        `https://api.trello.com/1/cards/${cardId}/checklists?key=${this.apiKey}&token=${this.apiToken}`,
-        {
-          method: "GET",
-          headers: {
-            Accept: "application/json",
-          },
-        }
-      );
-      const checklists = await response.json();
-      this.checklists = checklists;
-      // debugger;
-      console.log(this.checklists);
-    },
-    async fetchComments(cardId) {
-      const response = await fetch(
-        `https://api.trello.com/1/cards/${cardId}/actions?key=${this.apiKey}&token=${this.apiToken}`,
-        {
-          method: "GET",
-          headers: {
-            Accept: "application/json",
-          },
-        }
-      );
-      const comments = await response.json();
-      this.comments = comments;
-      console.log(this.comments);
     },
     async addDescription(cardId) {
       await fetch(
@@ -133,73 +94,6 @@ export default {
     },
     toggleDescription() {
       this.showDescription = !this.showDescription;
-    },
-    toggleChecklists() {
-      this.showChecklists = !this.showChecklists;
-      this.showChecklist = null;
-    },
-    toggleChecklist(checklistId) {
-      this.showChecklist = checklistId;
-    },
-    toggleComments() {
-      this.showComments = !this.showComments;
-    },
-    async createChecklist() {
-      await fetch(
-        `https://api.trello.com/1/cards/${this.cardId}/checklists?key=${this.apiKey}&token=${this.apiToken}&name=${this.checklistName}`,
-        {
-          method: "POST",
-        }
-      );
-      this.fetchChecklists(this.cardId);
-    },
-    async addListItem(listId) {
-      await fetch(
-        `https://api.trello.com/1/checklists/${listId}/checkItems?key=${this.apiKey}&token=${this.apiToken}&name=${this.listItem}`,
-        {
-          method: "POST",
-        }
-      );
-      this.fetchChecklists(this.cardId);
-    },
-    async deleteChecklist(listId) {
-      await fetch(
-        `https://api.trello.com/1/checklists/${listId}?key=${this.apiKey}&token=${this.apiToken}`,
-        {
-          method: "DELETE",
-        }
-      );
-      this.fetchChecklists(this.cardId);
-    },
-    async deleteCheckItem(listId, checkItemId) {
-      await fetch(
-        `https://api.trello.com/1/checklists/${listId}/checkItems/${checkItemId}?key=${this.apiKey}&token=${this.apiToken}`,
-        {
-          method: "DELETE",
-        }
-      );
-      this.fetchChecklists(this.cardId);
-    },
-    async addComment() {
-      await fetch(
-        `https://api.trello.com/1/cards/${this.cardId}/actions/comments?key=${this.apiKey}&token=${this.apiToken}&text=${this.comment}`,
-        {
-          method: "POST",
-          headers: {
-            Accept: "application/json",
-          },
-        }
-      );
-      this.fetchComments(this.cardId);
-    },
-    async deleteComment(commentId) {
-      await fetch(
-        `https://api.trello.com/1/cards/${this.cardId}/actions/${commentId}/comments?key=${this.apiKey}&token=${this.apiToken}`,
-        {
-          method: "DELETE",
-        }
-      );
-      this.fetchComments(this.cardId);
     },
   },
 };
