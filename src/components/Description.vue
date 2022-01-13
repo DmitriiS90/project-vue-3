@@ -89,7 +89,14 @@
           <div v-if="showComments">
             <div class="description-comments__content" v-if="comments.length">
               <ul v-for="comment in comments" :key="comment.id">
-                <li>{{ comment.data.text }}</li>
+                <li>
+                  {{ comment.data.text }}
+                  <Button
+                    value="x"
+                    appearance="warning"
+                    @click="deleteComment(comment.id)"
+                  />
+                </li>
               </ul>
             </div>
             <p v-else>no comments</p>
@@ -188,7 +195,6 @@ export default {
       );
       const comments = await response.json();
       this.comments = comments;
-      // debugger;
       console.log(this.comments);
     },
     async addDescription(cardId) {
@@ -263,6 +269,15 @@ export default {
           headers: {
             Accept: "application/json",
           },
+        }
+      );
+      this.fetchComments(this.cardId);
+    },
+    async deleteComment(commentId) {
+      await fetch(
+        `https://api.trello.com/1/cards/${this.cardId}/actions/${commentId}/comments?key=${this.apiKey}&token=${this.apiToken}`,
+        {
+          method: "DELETE",
         }
       );
       this.fetchComments(this.cardId);
