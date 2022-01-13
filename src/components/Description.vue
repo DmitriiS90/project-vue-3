@@ -19,68 +19,7 @@
           />
         </div>
 
-        <div class="description-checklist">
-          <p v-on:click="toggleChecklists" class="description-checklist__title">
-            CheckLists
-          </p>
-          <div v-if="showChecklists">
-            <div v-if="this.checklists.length">
-              <div
-                v-for="checklist in this.checklists"
-                :key="checklist.id"
-                class="description-checklist__content"
-              >
-                <p
-                  v-on:click="toggleChecklist(checklist.id)"
-                  class="description-checklist__name"
-                >
-                  {{ checklist.name }}
-                </p>
-                <ul
-                  v-for="checkItem in checklist.checkItems"
-                  :key="checkItem.id"
-                >
-                  <li
-                    class="description-checklist__item"
-                    v-if="showChecklist == checklist.id"
-                  >
-                    <span class="span">{{ checkItem.name }}</span>
-                    <input
-                      type="checkbox"
-                      @change="deleteCheckItem(checklist.id, checkItem.id)"
-                    />
-                  </li>
-                </ul>
-                <Field
-                  v-if="showChecklist == checklist.id"
-                  className="input"
-                  v-model="listItem"
-                />
-                <Button
-                  v-if="showChecklist == checklist.id"
-                  value="+"
-                  appearance="primary"
-                  @click="addListItem(checklist.id)"
-                />
-                <Button
-                  v-if="showChecklist == checklist.id"
-                  value="Delete checklist"
-                  appearance="danger"
-                  @click="deleteChecklist(checklist.id)"
-                />
-              </div>
-            </div>
-            <p v-else class="description-checklist__name">NO CHECKLIST</p>
-          </div>
-          <div v-if="showChecklists" class="description-checklist__form">
-            <Field className="input" v-model="checklistName" />
-            <Button
-              value="Create checklist"
-              appearance="primary"
-              @click="createChecklist(this.cardId)"
-            />
-          </div>
-        </div>
+        <Checklists :cardId="this.cardId" />
 
         <Comments :cardId="this.cardId" />
       </div>
@@ -95,10 +34,10 @@
 
 <script>
 import Button from "./Button.vue";
+import Checklists from "./Checklists.vue";
 import Comments from "./Comments.vue";
-import Field from "./Field.vue";
 export default {
-  components: { Button, Field, Comments },
+  components: { Button, Comments, Checklists },
   data() {
     return {
       showModal: false,
