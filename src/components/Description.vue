@@ -82,28 +82,7 @@
           </div>
         </div>
 
-        <div class="description-comments">
-          <p @click="toggleComments" class="description-comments__title">
-            Comments
-          </p>
-          <div v-if="showComments">
-            <div class="description-comments__content" v-if="comments.length">
-              <ul v-for="comment in comments" :key="comment.id">
-                <li>
-                  {{ comment.data.text }}
-                  <Button
-                    value="x"
-                    appearance="warning"
-                    @click="deleteComment(comment.id)"
-                  />
-                </li>
-              </ul>
-            </div>
-            <p v-else>no comments</p>
-            <Field className="input" v-model="comment" />
-            <Button value="+" appearance="primary" @click="addComment" />
-          </div>
-        </div>
+        <Comments :cardId="this.cardId" />
       </div>
       <Button
         value="Cancel"
@@ -116,9 +95,10 @@
 
 <script>
 import Button from "./Button.vue";
+import Comments from "./Comments.vue";
 import Field from "./Field.vue";
 export default {
-  components: { Button, Field },
+  components: { Button, Field, Comments },
   data() {
     return {
       showModal: false,
