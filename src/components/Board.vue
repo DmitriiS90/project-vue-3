@@ -107,7 +107,6 @@ export default {
         }
       );
       const board = await response.json();
-      // debugger;
       this.lists = board.lists;
     },
     async createList(boardId) {
@@ -128,12 +127,10 @@ export default {
         .then((text) => console.log(text))
         .catch((err) => console.error(err));
       const board = await response.json();
-      // debugger;
       this.lists = board.lists;
     },
     applyDrag(array, dragResult) {
       const { removedIndex, addedIndex, payload } = dragResult;
-      //console.log(arr[removedIndex].pos, removedIndex, addedIndex);
 
       if (removedIndex === null && addedIndex === null) return array;
       const result = [...array];
